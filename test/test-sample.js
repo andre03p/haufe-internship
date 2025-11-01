@@ -18,17 +18,4 @@ function getUserData(userId) {
   // Missing return statement and error handling
 }
 
-// Using == instead of ===
-function validateUser(user) {
-  if (user.age == 18) {
-    // Should use ===
-    console.log("User is adult");
-  }
-
-  // No null check
-  var name = user.name.toUpperCase();
-
-  return true;
-}
-
 module.exports = { getUserData, validateUser };
