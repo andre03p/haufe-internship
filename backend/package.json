@@ -10,7 +10,14 @@
     "prisma:migrate": "dotenv -e .env -- prisma migrate dev",
     "prisma:push": "dotenv -e .env -- prisma db push",
     "prisma:studio": "dotenv -e .env -- prisma studio",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prisma:seed": "dotenv -e .env -- node prisma/seed.js",
+    "install-hook": "node hooks/install-hook.js",
+    "seed-standards": "node -e \"import('./routes/standards.js').then(m => console.log('Run POST /api/standards/seed'))\"",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:api": "node test-api.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "keywords": [],
   "author": "",
@@ -22,14 +29,21 @@
     "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "diff": "^8.0.2",
     "dotenv": "^17.2.2",
+    "eslint": "^9.39.0",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
     "helmet": "^8.1.0",
+    "jshint": "^2.13.6",
     "jsonwebtoken": "^9.0.2",
-    "pg": "^8.16.3"
+    "ollama": "^0.6.2",
+    "parse-diff": "^0.11.1",
+    "pg": "^8.16.3",
+    "simple-git": "^3.29.0"
   },
   "devDependencies": {
+    "dotenv-cli": "^11.0.0",
     "nodemon": "^3.1.10",
     "prisma": "^6.16.2"
   }

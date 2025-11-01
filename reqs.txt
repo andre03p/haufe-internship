@@ -1,0 +1,25 @@
+Build a functional product capable of performing automated code reviews, providing 
+valuable insights and recommendations for developers.
+
+Your solution should analyze source code, detect potential issues, and assist in improving code quality. 
+Use AI where appropriate — ideally through a locally hosted Large Language Model (LLM)
+ to ensure privacy, performance, and innovation.
+
+
+The solution runs successfully and performs basic code review tasks.	
+The system performs analysis using a locally hosted LLM.	
+Perform code review before submitting changes (e.g., pre-commit hook or staged review).	
+Support reviewing only newly added or changed code segments.	
+Allow discussion or feedback resolution directly within review comments.	
+Provide automatic code fixes or refactoring options based on findings.	
+Estimate the development effort required to apply suggested changes.	
+Incorporate standard coding guidelines (e.g., PEP8, Google Style) in reviews.	
+Allow importing or defining custom coding standards or rulesets.	
+Include multiple dimensions of analysis (e.g., linting, security, architecture, testing, CI/CD).	
+Generate clear explanations and detailed recommendations for each finding.	
+Recommend documentation updates relevant to reviewed or changed code.	
+Efficient execution, fast analysis times, and resource-conscious design.	
+Implement token or resource usage tracking to control AI-related costs.	
+Intuitive, modern, and visually appealing interface.	
+Smooth workflow, minimal friction for users.	
+Clear, accurate, and actionable review feedback.	

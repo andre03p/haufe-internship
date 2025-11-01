@@ -5,6 +5,9 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import { PrismaClient } from "@prisma/client";
+import reviewsRouter from "./routes/reviews.js";
+import standardsRouter from "./routes/standards.js";
+import llmService from "./services/llmService.js";
 
 dotenv.config();
 
@@ -52,11 +55,17 @@ app.use(cookieParser());
 app.use(limiter);
 
 // Health check
-app.get("/health", (req, res) => {
-  res.json({ status: "ok" });
+app.get("/health", async (req, res) => {
+  const llmHealth = await llmService.checkHealth();
+  res.json({
+    status: "ok",
+    llm: llmHealth,
+  });
 });
 
 // Routes
+app.use("/api/reviews", reviewsRouter);
+app.use("/api/standards", standardsRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

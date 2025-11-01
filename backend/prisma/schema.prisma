@@ -17,8 +17,111 @@ datasource db {
 model User {
   id             Int       @id @default(autoincrement())
   email          String    @unique
-  password       String
+  password       String?   // Optional - not needed for basic code review
   name           String
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+  reviews        CodeReview[]
+  comments       ReviewComment[]
+}
+
+model CodeReview {
+  id                String   @id @default(uuid())
+  userId            Int
+  user              User     @relation(fields: [userId], references: [id])
+  repositoryPath    String
+  branch            String
+  commitHash        String?
+  status            ReviewStatus @default(PENDING)
+  filesAnalyzed     Int      @default(0)
+  issuesFound       Int      @default(0)
+  criticalIssues    Int      @default(0)
+  majorIssues       Int      @default(0)
+  minorIssues       Int      @default(0)
+  estimatedEffort   Float?   // in hours
+  tokensUsed        Int      @default(0)
+  analysisTime      Float?   // in seconds
+  recommendations   Json?    // documentation, testing, architecture, ci-cd recommendations
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  issues            CodeIssue[]
+  comments          ReviewComment[]
+  
+  @@index([userId, createdAt])
+  @@index([status])
+}
+
+model CodeIssue {
+  id              String   @id @default(uuid())
+  reviewId        String
+  review          CodeReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  filePath        String
+  lineNumber      Int
+  lineEnd         Int?
+  severity        IssueSeverity
+  category        String   // e.g., "style", "bug", "security", "performance", "testing", "architecture", "documentation", "ci-cd"
+  title           String
+  description     String   @db.Text
+  codeSnippet     String?  @db.Text
+  suggestion      String?  @db.Text
+  autoFixable     Boolean  @default(false)
+  fixCode         String?  @db.Text
+  effort          Float?   // estimated effort in hours
+  standard        String?  // e.g., "PEP8", "Google Style"
+  documentationNeeded String? @db.Text // documentation changes needed
+  resolved        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  
+  @@index([reviewId, severity])
+  @@index([filePath])
+}
+
+model ReviewComment {
+  id              String   @id @default(uuid())
+  reviewId        String
+  review          CodeReview @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  userId          Int
+  user            User     @relation(fields: [userId], references: [id])
+  issueId         String?
+  content         String   @db.Text
+  type            CommentType @default(COMMENT)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([reviewId])
+}
+
+model CodingStandard {
+  id              String   @id @default(uuid())
+  name            String   @unique
+  description     String?  @db.Text
+  language        String   // e.g., "javascript", "python", "java"
+  rules           Json     // Custom rules in JSON format
+  isActive        Boolean  @default(true)
+  isBuiltIn       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  @@index([language, isActive])
+}
+
+enum ReviewStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+enum IssueSeverity {
+  CRITICAL
+  MAJOR
+  MINOR
+  INFO
+}
+
+enum CommentType {
+  COMMENT
+  QUESTION
+  SUGGESTION
+  RESOLVED
 }
