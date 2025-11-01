@@ -1,8 +1,7 @@
 // Test file for code review
 
 function getUserData(userId) {
-  // No parameter validation
-  var apiUrl = "https://api.example.com/users/" + userId; // Using var instead of const
+  var apiUrl = "https://api.example.com/users/" + userId;
 
   // No error handling
   fetch(apiUrl, {
@@ -12,10 +11,7 @@ function getUserData(userId) {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log(data); // No proper logging
+      console.log(data);
       return data;
     });
-  // Missing return statement and error handling
 }
-
-module.exports = { getUserData, validateUser };
