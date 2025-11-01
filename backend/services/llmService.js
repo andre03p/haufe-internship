@@ -66,7 +66,7 @@ class LLMService {
         stream: true,
         options: {
           temperature: 0.3, // Lower temperature for more consistent analysis
-          num_predict: this.maxTokens,
+          num_predict: Math.min(this.maxTokens, 512), // Limit to 512 tokens for faster response
         },
       });
 
@@ -207,17 +207,17 @@ Respond in this JSON format:
             .join("\n")}`
         : "";
 
-    return `You are an expert code reviewer specialized in ${language}. Perform a comprehensive multi-dimensional analysis of the following code.${standardsText}
+    // Simplified prompt for faster local processing
+    return `You are a code reviewer for ${language}. Quickly analyze this code and find the top 3 most important issues.${standardsText}
 
 File: ${filePath}
-Language: ${language}
 
 Code:
 \`\`\`${language}
 ${code}
 \`\`\`
 
-Provide a detailed analysis in the following JSON format:
+Respond ONLY with this JSON format (no explanations):
 {
   "issues": [
     {
@@ -247,17 +247,7 @@ Provide a detailed analysis in the following JSON format:
   }
 }
 
-Analyze across multiple dimensions:
-1. **Security**: SQL injection, XSS, authentication flaws, data exposure, insecure dependencies
-2. **Bugs & Logic**: Error handling, edge cases, null checks, logic errors, race conditions
-3. **Performance**: Algorithm efficiency, memory leaks, database queries, caching opportunities
-4. **Code Quality**: Style violations, code smells, complexity, readability, maintainability
-5. **Testing**: Missing tests, test coverage, test quality, testability
-6. **Architecture**: Design patterns, separation of concerns, coupling, scalability
-7. **Documentation**: Missing docstrings, unclear comments, outdated documentation
-8. **CI/CD**: Build issues, deployment concerns, environment configuration
-
-Be specific, actionable, and provide clear explanations with line numbers.`;
+Focus on: critical bugs, security issues, and major code quality problems. Be concise.`;
   }
 
   /**

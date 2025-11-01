@@ -135,16 +135,22 @@ async function runCodeReview() {
         throw new Error("Backend not available");
       }
 
-      const llmStatus = healthCheck.data?.llm?.status;
-      if (llmStatus !== "ok") {
-        log(
-          "\n⚠️  Warning: LLM service may not be fully operational",
-          "yellow"
-        );
-        if (healthCheck.data?.llm?.message) {
-          log(`   ${healthCheck.data.llm.message}`, "yellow");
-        }
-      }
+      // Check AI service status (it's under 'ai' not 'llm')
+      const currentProvider =
+        healthCheck.data?.ai?.currentProvider || "unknown";
+      const aiProviderStatus = healthCheck.data?.ai?.[currentProvider]?.status;
+
+      // if (aiProviderStatus !== "ok") {
+      //   log(
+      //     `\n⚠️  Warning: AI service (${currentProvider}) may not be fully operational`,
+      //     "yellow"
+      //   );
+      //   if (healthCheck.data?.ai?.[currentProvider]?.message) {
+      //     log(`   ${healthCheck.data.ai[currentProvider].message}`, "yellow");
+      //   }
+      // } else {
+      //   log(`\n✓ AI service ready (using ${currentProvider})`, "green");
+      // }
     } catch (error) {
       log("\nError: Cannot connect to code review backend", "red");
       log(`   Make sure the backend is running at ${BACKEND_URL}`, "yellow");
@@ -234,7 +240,7 @@ async function runCodeReview() {
     }
 
     log("\n━".repeat(50), "blue");
-    log(`\n📊 View full report: ${BACKEND_URL}/reviews/${review.id}`, "cyan");
+    log(`\n📊  report: ${BACKEND_URL}/reviews/${review.id}`, "cyan");
     log(`🔗 Review ID: ${review.id}`, "cyan");
 
     // Decision point

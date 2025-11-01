@@ -4,4 +4,5 @@ function add(a, b) {
 }
 
 consolee.log(add(2, 3));
-dsdf;
+a++;
+b++;
