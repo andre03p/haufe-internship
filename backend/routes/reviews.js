@@ -1,6 +1,6 @@
 import express from "express";
 import codeAnalysisService from "../services/codeAnalysisService.js";
-import llmService from "../services/llmService.js";
+import aiService from "../services/aiService.js";
 import { prisma } from "../server.js";
 
 const router = express.Router();
@@ -11,12 +11,23 @@ const router = express.Router();
  */
 router.post("/analyze-staged", async (req, res) => {
   try {
-    const { repositoryPath, userId } = req.body;
+    const { repositoryPath, userId, provider } = req.body;
 
     if (!repositoryPath || !userId) {
       return res.status(400).json({
         error: "repositoryPath and userId are required",
       });
+    }
+
+    // Switch provider if specified
+    const currentProvider = aiService.getProvider();
+    if (provider && provider !== currentProvider) {
+      if (provider !== "ollama" && provider !== "gemini") {
+        return res.status(400).json({
+          error: 'Invalid provider. Must be "ollama" or "gemini"',
+        });
+      }
+      aiService.setProvider(provider);
     }
 
     const review = await codeAnalysisService.analyzeStagedChanges(
@@ -27,6 +38,7 @@ router.post("/analyze-staged", async (req, res) => {
     res.json({
       success: true,
       review,
+      provider: aiService.getProvider(),
       message: `Analysis complete. Found ${review.issuesFound} issues.`,
     });
   } catch (error) {
@@ -43,12 +55,23 @@ router.post("/analyze-staged", async (req, res) => {
  */
 router.post("/analyze-commit", async (req, res) => {
   try {
-    const { repositoryPath, commitHash, userId } = req.body;
+    const { repositoryPath, commitHash, userId, provider } = req.body;
 
     if (!repositoryPath || !commitHash || !userId) {
       return res.status(400).json({
         error: "repositoryPath, commitHash, and userId are required",
       });
+    }
+
+    // Switch provider if specified
+    const currentProvider = aiService.getProvider();
+    if (provider && provider !== currentProvider) {
+      if (provider !== "ollama" && provider !== "gemini") {
+        return res.status(400).json({
+          error: 'Invalid provider. Must be "ollama" or "gemini"',
+        });
+      }
+      aiService.setProvider(provider);
     }
 
     const review = await codeAnalysisService.analyzeCommit(
@@ -60,6 +83,7 @@ router.post("/analyze-commit", async (req, res) => {
     res.json({
       success: true,
       review,
+      provider: aiService.getProvider(),
       message: `Analysis complete. Found ${review.issuesFound} issues.`,
     });
   } catch (error) {

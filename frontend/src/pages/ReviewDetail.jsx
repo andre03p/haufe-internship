@@ -34,7 +34,7 @@ export default function ReviewDetail() {
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [comment, setComment] = useState("");
   const [expandedIssues, setExpandedIssues] = useState(new Set());
-  const userId = 1; // TODO: Get from auth context
+  const userId = 3; // TODO: Get from auth context (using Default Developer for now)
 
   useEffect(() => {
     fetchReview();

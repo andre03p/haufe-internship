@@ -125,7 +125,7 @@ function makeRequest(url, method = "GET", data = null) {
 
 async function runCodeReview() {
   try {
-    log("\n🔍 Running automated code review...", "cyan");
+    log("\nRunning automated code review...", "cyan");
     log("━".repeat(50), "blue");
 
     // Check if backend is available
@@ -146,7 +146,7 @@ async function runCodeReview() {
         }
       }
     } catch (error) {
-      log("\n❌ Error: Cannot connect to code review backend", "red");
+      log("\nError: Cannot connect to code review backend", "red");
       log(`   Make sure the backend is running at ${BACKEND_URL}`, "yellow");
       log("   Or set SKIP_CODE_REVIEW=true to bypass this check\n", "yellow");
       process.exit(1);
@@ -158,7 +158,7 @@ async function runCodeReview() {
     }).trim();
 
     // Trigger analysis
-    log("\n📊 Analyzing staged changes...", "blue");
+    log("\nAnalyzing staged changes...", "blue");
     const response = await makeRequest(
       `${BACKEND_URL}/api/reviews/analyze-staged`,
       "POST",
@@ -169,7 +169,7 @@ async function runCodeReview() {
     );
 
     if (response.statusCode !== 200) {
-      log("\n❌ Analysis failed", "red");
+      log("\nAnalysis failed", "red");
       log(`   ${response.data?.error || "Unknown error"}`, "red");
       process.exit(1);
     }
@@ -177,12 +177,12 @@ async function runCodeReview() {
     const { review } = response.data;
 
     // Display results
-    log("\n✅ Analysis Complete!", "green");
+    log("\nAnalysis Complete!", "green");
     log("━".repeat(50), "blue");
 
-    log(`\n📁 Files analyzed: ${review.filesAnalyzed}`, "cyan");
-    log(`⚡ Analysis time: ${review.analysisTime?.toFixed(2)}s`, "cyan");
-    log(`🎯 Tokens used: ${review.tokensUsed}`, "cyan");
+    log(`\nFiles analyzed: ${review.filesAnalyzed}`, "cyan");
+    log(`Analysis time: ${review.analysisTime?.toFixed(2)}s`, "cyan");
+    log(`Tokens used: ${review.tokensUsed}`, "cyan");
 
     if (review.estimatedEffort) {
       log(

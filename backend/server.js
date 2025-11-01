@@ -4,28 +4,26 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-import { PrismaClient } from "@prisma/client";
+import { prisma, connectDatabase, checkDatabaseHealth } from "./db.js";
 import reviewsRouter from "./routes/reviews.js";
 import standardsRouter from "./routes/standards.js";
-import llmService from "./services/llmService.js";
+import externalApiRouter from "./routes/external-api.js";
+import aiProviderRouter from "./routes/ai-provider.js";
+import aiService from "./services/aiService.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Initialize Prisma
-export const prisma = new PrismaClient({
-  log:
-    process.env.NODE_ENV === "development"
-      ? ["query", "error", "warn"]
-      : ["error"],
-});
+// Export prisma for use in routes
+export { prisma };
 
-prisma
-  .$connect()
-  .then(() => console.log("Database connected"))
-  .catch((err) => console.error("Database connection failed:", err));
+// Connect to database
+connectDatabase().catch((err) => {
+  console.error("Failed to connect to database:", err);
+  process.exit(1);
+});
 
 app.set("trust proxy", 1);
 
@@ -56,16 +54,22 @@ app.use(limiter);
 
 // Health check
 app.get("/health", async (req, res) => {
-  const llmHealth = await llmService.checkHealth();
+  const dbHealth = await checkDatabaseHealth();
+  const allAiHealth = await aiService.checkAllHealth();
+
   res.json({
     status: "ok",
-    llm: llmHealth,
+    database: dbHealth,
+    ai: allAiHealth,
+    timestamp: new Date().toISOString(),
   });
 });
 
 // Routes
 app.use("/api/reviews", reviewsRouter);
 app.use("/api/standards", standardsRouter);
+app.use("/api/external", externalApiRouter);
+app.use("/api/ai", aiProviderRouter);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

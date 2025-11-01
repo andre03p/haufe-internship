@@ -4,7 +4,7 @@ import path from "path";
 import fs from "fs/promises";
 import { promisify } from "util";
 import { exec } from "child_process";
-import llmService from "./llmService.js";
+import aiService from "./aiService.js";
 import { prisma } from "../server.js";
 
 const execAsync = promisify(exec);
@@ -125,8 +125,8 @@ class CodeAnalysisService {
         try {
           console.log(`Analyzing ${file.to} (${language})...`);
 
-          // Analyze with LLM
-          const analysis = await llmService.analyzeCode(
+          // Analyze with AI
+          const analysis = await aiService.analyzeCode(
             changedCode,
             file.to,
             language,
@@ -217,7 +217,7 @@ class CodeAnalysisService {
       let estimatedEffort = 0;
       if (allIssues.length > 0) {
         try {
-          const effortEstimate = await llmService.estimateEffort(allIssues);
+          const effortEstimate = await aiService.estimateEffort(allIssues);
           estimatedEffort = effortEstimate.totalEffort || 0;
 
           // Update individual issue efforts
@@ -363,7 +363,7 @@ class CodeAnalysisService {
         try {
           console.log(`Analyzing ${file.to} (${language})...`);
 
-          const analysis = await llmService.analyzeCode(
+          const analysis = await aiService.analyzeCode(
             changedCode,
             file.to,
             language,
@@ -445,7 +445,7 @@ class CodeAnalysisService {
       let estimatedEffort = 0;
       if (allIssues.length > 0) {
         try {
-          const effortEstimate = await llmService.estimateEffort(allIssues);
+          const effortEstimate = await aiService.estimateEffort(allIssues);
           estimatedEffort = effortEstimate.totalEffort || 0;
 
           if (
@@ -533,7 +533,7 @@ class CodeAnalysisService {
       const codeSection = lines.slice(startLine, endLine).join("\n");
 
       // Generate fix
-      const fixedCode = await llmService.generateFix(
+      const fixedCode = await aiService.generateFix(
         codeSection,
         issue,
         language

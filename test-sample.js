@@ -4,9 +4,6 @@ function getUserData(userId) {
   // No parameter validation
   var apiUrl = "https://api.example.com/users/" + userId; // Using var instead of const
 
-  // Hard-coded API key (security issue)
-  var apiKey = "sk-1234567890abcdef";
-
   // No error handling
   fetch(apiUrl, {
     headers: {

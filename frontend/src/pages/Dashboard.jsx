@@ -20,7 +20,7 @@ export default function Dashboard() {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const userId = 1; // TODO: Get from auth context
+  const userId = 3; // TODO: Get from auth context (using Default Developer for now)
 
   useEffect(() => {
     fetchDashboardData();
